@@ -6,6 +6,7 @@ from PyQt5.QtCore import *
 from board import Board
 from players import *
 
+
 class App(QMainWindow):
     '''
     Main Graphical User Interface class.
@@ -14,6 +15,7 @@ class App(QMainWindow):
     :attribute time_interval: integer giving the delay before an AI action
     '''
     TITLE = 'INFOF-106 SlideWays'
+
     def __init__(self):
         '''
         Constructor of class `App`.
@@ -60,14 +62,16 @@ class App(QMainWindow):
 
         self.hbox = QHBoxLayout()
 
-        self.left_buttons = ButtonPanel(self, '<', 4, self.handle_click_event, LEFT)
+        self.left_buttons = ButtonPanel(
+            self, '<', 4, self.handle_click_event, LEFT)
         self.hbox.addWidget(self.left_buttons)
 
         self.canvas = Canvas(self.board, parent=self.central_widget)
         self.canvas.mousePressEvent = self.handle_click_event
         self.hbox.addWidget(self.canvas)
 
-        self.right_buttons = ButtonPanel(self, '>', 4, self.handle_click_event, RIGHT)
+        self.right_buttons = ButtonPanel(
+            self, '>', 4, self.handle_click_event, RIGHT)
         self.hbox.addWidget(self.right_buttons)
 
         self.main_vbox.addLayout(self.hbox)
@@ -127,7 +131,8 @@ class App(QMainWindow):
         elif text == 'Human':
             return HumanPlayer(player_id, board)
         else:
-            raise ValueError('Only \'Minimax\' and \'Human\' are valid player types')
+            raise ValueError(
+                'Only \'Minimax\' and \'Human\' are valid player types')
 
     def start_game(self):
         '''
@@ -136,8 +141,10 @@ class App(QMainWindow):
         '''
         self.start_button.setText('Restart')
         self.board.reset()
-        self.player_1 = App.make_player(self.cb_player1.currentText(), 1, self.board)
-        self.player_2 = App.make_player(self.cb_player2.currentText(), 2, self.board)
+        self.player_1 = App.make_player(
+            self.cb_player1.currentText(), 1, self.board)
+        self.player_2 = App.make_player(
+            self.cb_player2.currentText(), 2, self.board)
         self.current_player = self.player_2
         self.waiting_player = self.player_1
         self.canvas.update()
@@ -162,15 +169,17 @@ class App(QMainWindow):
         '''
         Show that the game is over and display the winner.
         '''
-        #self.player_1.not_your_turn()
+        # self.player_1.not_your_turn()
         popup = WinnerPopup(self.board.winner(), self)
-        popup.exec_()  #Use exec_ instead of show to block main window
+        popup.exec_()  # Use exec_ instead of show to block main window
         self.start_button.setText('Start')
+
 
 class WinnerPopup(QDialog):
     '''
     Popup displaying the winner(s) of the game
     '''
+
     def __init__(self, winners, parent):
         '''
         Constructor of class `WinnerPopup`
@@ -186,15 +195,20 @@ class WinnerPopup(QDialog):
         self.setFixedSize(QSize(500, 100))
         self.label = QLabel(text, self)
         self.label.setFont(QFont("Calibri", 20, QFont.Bold))
-        label_width = self.label.fontMetrics().boundingRect(self.label.text()).width()
-        label_height = self.label.fontMetrics().boundingRect(self.label.text()).height()
-        self.label.move((self.width()-label_width)/2, (self.height()-label_height)/2)
+        # TODO fix the label width and label heigth to the current version
+        # label_width = self.label.fontMetrics().boundingRect(self.label.text()).width()
+        # label_height = self.label.fontMetrics().boundingRect(self.label.text()).height()
+
+        # self.label.move((self.width()-label_width)/2,
+        #                 (self.height()-label_height)/2)
+
 
 class ButtonPanel(QWidget):
     '''
     Qt-compatible widget representing a panel containing several buttons intended for board offsets.
     :attribute buttons: list of QPushButton instances
     '''
+
     def __init__(self, parent, button_text, nb_buttons, button_callback, direction):
         '''
         Constructor of class `ButtonPanel`.
@@ -204,21 +218,25 @@ class ButtonPanel(QWidget):
         :param button_callback: function to call when a button is clicked
         :param direction: direction of the offset (either +1 or -1)
         '''
-        #do not forget to call the constructor of the parent class
+        # do not forget to call the constructor of the parent class
         super().__init__(parent=parent)
         self.setFixedSize(QSize(20, HEIGHT))
         self.buttons = list()
         for row in range(nb_buttons):
             self.buttons.append(QPushButton(button_text, parent=self))
             self.buttons[-1].setMaximumWidth(20)
-            self.buttons[-1].clicked.connect(lambda _, row=row: button_callback(event=None, offset=(direction, row)))
-            self.buttons[-1].move(0, OFFSET + CELL_SIZE//2 + row*(CELL_SIZE + OFFSET) - 10)
+            self.buttons[-1].clicked.connect(
+                lambda _, row=row: button_callback(event=None, offset=(direction, row)))
+            self.buttons[-1].move(0, OFFSET + CELL_SIZE //
+                                  2 + row*(CELL_SIZE + OFFSET) - 10)
+
 
 class Canvas(QWidget):
     '''
     Qt-compatible widget representing the canvas on which the board is drawn repeatedly.
     :attribute board:
     '''
+
     def __init__(self, board, parent=None):
         '''
         Constructor of the class `Canvas`
@@ -256,7 +274,7 @@ class Canvas(QWidget):
             # First draw the rectangle of the current row
             y = row * (CELL_SIZE + OFFSET) + OFFSET + CELL_SIZE//2
             x = (CELL_SIZE + OFFSET) * (offset[row]+3) + OFFSET + CELL_SIZE//2
-            ### (x, y) represents the middle of the left cell of considered row
+            # (x, y) represents the middle of the left cell of considered row
             qp.drawRect(
                 x - CELL_SIZE//2 + 5,
                 y - CELL_SIZE//2 + 5,
